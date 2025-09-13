@@ -13,15 +13,15 @@ variable "vpc_name" {
   type        = string
 }
 
-variable "availability_zone" {
-  description = "Availability zone list"
-  type        = list(string)
-}
+# variable "availability_zone" {
+#   description = "Availability zone list"
+#   type        = list(string)
+# }
 
-variable "az_name" {
-  description = "Availability zone name list"
-  type        = list(string)
-}
+# variable "az_name" {
+#   description = "Availability zone name list"
+#   type        = list(string)
+# }
 
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
@@ -80,11 +80,6 @@ variable "ACCOUNT" {
 
 variable "CredSecret" {
   description = "Name of the AWS credentials secret."
-  type        = string
-}
-
-variable "EbsCredSecret" {
-  description = "Name of the EBS CSI driver secret."
   type        = string
 }
 
