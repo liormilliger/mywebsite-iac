@@ -85,10 +85,12 @@ resource "aws_eks_node_group" "node-group" {
   }
 }
 
-# Naming Nodes
 resource "aws_launch_template" "naming-nodes" {
   name = "naming-nodes"
-  # image_id = "ami-0d64bb532e0502c46" ##ubuntu 22.04 LTS for eu-west-1
+  
+  # Add this line to attach your new security group
+  vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
+
   tag_specifications {
     resource_type = "instance"
     
@@ -97,6 +99,7 @@ resource "aws_launch_template" "naming-nodes" {
     }
   }
 }
+
 # Credentials for EBS-CSI-DRIVER
 
 data "aws_secretsmanager_secret" "aws-credentials" {
