@@ -19,7 +19,7 @@ cluster_version = "1.33"
 ### NODE GROUP ###
 node_group_name = "liorm-node-group"
 capacity_type = "ON_DEMAND"
-instance_types = ["t3.small", "t3a.small"]
+instance_types = ["t3.medium", "t3a.medium"]
 max_size = 3
 desired_size = 2
 node_name = "liorm-webapp"
