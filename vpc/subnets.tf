@@ -6,6 +6,7 @@ resource "aws_subnet" "private_subnets" {
   availability_zone = "us-east-1a" # Example availability zone, adjust as needed
   tags = {
     Name = "liorm-private-subnet-${count.index}"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
@@ -17,5 +18,6 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = true
   tags = {
     Name = "liorm-public-subnet-${count.index}"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }

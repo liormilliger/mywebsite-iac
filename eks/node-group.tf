@@ -81,6 +81,7 @@ resource "aws_eks_node_group" "node-group" {
 
   # Allow external changes without Terraform plan difference
   lifecycle {
+    create_before_destroy = true
     ignore_changes = [scaling_config[0].desired_size]
   }
 }
@@ -89,7 +90,7 @@ resource "aws_launch_template" "naming-nodes" {
   name = "naming-nodes"
   
   # Add this line to attach your new security group
-  vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
+  # vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
 
   tag_specifications {
     resource_type = "instance"
