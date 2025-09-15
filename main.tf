@@ -27,3 +27,13 @@ module "eks" {
     public_subnet_ids = module.vpc.public_subnet_ids
 
 }
+
+module "argocd" {
+  source                 = "./argocd"
+  cluster_name           = module.eks.cluster_name
+  cluster_endpoint       = module.eks.cluster_endpoint
+  cluster_ca_certificate = module.eks.cluster_ca_certificate
+  
+  depends_on = [module.eks]
+}
+

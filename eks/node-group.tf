@@ -90,7 +90,7 @@ resource "aws_launch_template" "naming-nodes" {
   name = "naming-nodes"
   
   # Add this line to attach your new security group
-  # vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
+  vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
 
   tag_specifications {
     resource_type = "instance"
