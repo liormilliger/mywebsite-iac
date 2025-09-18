@@ -3,10 +3,10 @@
 #   description = "The IDs of the subnets in the us-east region."
 # }
 
-# output "VPC_ID" {
-#     description = "VPC id for liorm_portfolio"
-#     value = aws_vpc.liorm-portfolio.id
-# }
+output "vpc_id" {
+    description = "VPC id for liorm_portfolio"
+    value = aws_vpc.liorm_vpc.id
+}
 
 # output "vpc_name" {
 #   description = "Your vpc name"

@@ -13,7 +13,7 @@ public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
 ### CLUSTER ###
 EbsCredSecret = "aws-credentials-OWbgXs"
 CredSecret = "aws-credentials-OWbgXs"
-cluster_name = "liorm-webapp"
+cluster_name = "liorm-webapp-cluster"
 cluster_version = "1.33"
 
 ### NODE GROUP ###

@@ -13,6 +13,11 @@ variable "vpc_name" {
   type        = string
 }
 
+# variable "vpc_id" {
+#   description = "VPC id"
+#   type = string
+# }
+
 # variable "availability_zone" {
 #   description = "Availability zone list"
 #   type        = list(string)

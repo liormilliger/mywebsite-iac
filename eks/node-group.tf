@@ -87,10 +87,20 @@ resource "aws_eks_node_group" "node-group" {
 }
 
 resource "aws_launch_template" "naming-nodes" {
-  name = "naming-nodes"
+  name = "liorm-webapp"
   
   # Add this line to attach your new security group
-  vpc_security_group_ids = [aws_security_group.eks_node_sg.id]
+  vpc_security_group_ids = [
+    aws_security_group.eks_node_sg.id,
+    aws_eks_cluster.eks-cluster.vpc_config[0].cluster_security_group_id
+  ]
+
+  # metadata_options was required for the loadbalancer to get the vpc id from the ec2 metadata
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional" // This allows IMDSv1 and IMDSv2 calls
+    http_put_response_hop_limit = 2
+  }
 
   tag_specifications {
     resource_type = "instance"

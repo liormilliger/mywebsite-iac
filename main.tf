@@ -34,6 +34,27 @@ module "argocd" {
   cluster_endpoint       = module.eks.cluster_endpoint
   cluster_ca_certificate = module.eks.cluster_ca_certificate
   
+  providers = {
+    kubernetes = kubernetes.eks
+    helm       = helm.eks
+    # REMOVED kubectl = kubectl
+  }
+  
   depends_on = [module.eks]
 }
+
+module "aws_load_balancer_controller" {
+  source = "./lb-controller"
+
+  cluster_name      = module.eks.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  vpc_id            = module.vpc.vpc_id
+
+  providers = {
+    helm = helm.eks
+  }
+
+  depends_on = [module.eks]
+}
+
 

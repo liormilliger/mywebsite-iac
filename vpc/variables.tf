@@ -43,3 +43,4 @@ variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets"
   type        = list(string)
 }
+

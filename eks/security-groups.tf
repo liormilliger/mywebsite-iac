@@ -16,6 +16,14 @@ resource "aws_security_group" "eks_node_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+# egress {
+#   from_port       = 443
+#   to_port         = 443
+#   protocol        = "tcp"
+#   # Reference the cluster's security group directly from the EKS resource
+#   security_groups = [aws_eks_cluster.eks-cluster.vpc_config[0].cluster_security_group_id]
+# }
+
   # Rule: Allow node-to-node communication for pods
   ingress {
     from_port = 0

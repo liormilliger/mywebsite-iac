@@ -1,36 +1,52 @@
-# 1. Create the namespace for ArgoCD
+# Corrected argocd/main.tf
+
+terraform {
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.10.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.20"
+    }
+    # We now require the time provider
+    time = {
+      source  = "hashicorp/time"
+      version = ">= 0.9.1"
+    }
+  }
+}
+
+# Creates the namespace where ArgoCD's components will be installed.
 resource "kubernetes_namespace" "argocd" {
   metadata {
     name = "argocd"
   }
 }
 
-# 2. Install ArgoCD using the Helm chart
+# Installs the ArgoCD platform from the official Helm chart.
 resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   namespace  = kubernetes_namespace.argocd.metadata[0].name
-  version    = "5.51.2" # Use a specific version for stability
+  version    = "5.51.2"
+}
 
-  values = [
-    # Add any custom ArgoCD values here if needed
-    yamlencode({
-      server = {
-        # Ingress configuration can be added here later
-      }
-    })
+# --- THIS IS THE NEW, GUARANTEED FIX ---
+# This resource introduces a 30-second delay after the Helm chart
+# installation starts, allowing the CRDs to be fully registered in the cluster.
+resource "time_sleep" "wait_for_crd_registration" {
+  create_duration = "30s"
+
+  depends_on = [
+    helm_release.argocd
   ]
 }
 
-# 3. Create a namespace for your website application
-resource "kubernetes_namespace" "my_app" {
-  metadata {
-    name = "my-website"
-  }
-}
-
-# 4. The "App of Apps": This ArgoCD Application tells ArgoCD to monitor a Git repo
+# This creates the main "App of Apps" in ArgoCD.
+/*
 resource "kubernetes_manifest" "app_of_apps" {
   manifest = {
     "apiVersion" = "argoproj.io/v1alpha1"
@@ -45,12 +61,9 @@ resource "kubernetes_manifest" "app_of_apps" {
     "spec" = {
       "project" = "default"
       "source" = {
-        # <-- MODIFY THIS to your Kubernetes repo URL
-        "repoURL"        = "https://github.com/liormilliger/mywebsite-k8s.git" 
-        
-        # <-- MODIFY THIS to the path inside that repo
-        "path"           = "argocd"
-        "targetRevision" = "main" # Or your repo's default branch
+        "repoURL"        = "https://github.com/liormilliger/mywebsite-k8s.git"
+        "path"           = "argocd-apps"
+        "targetRevision" = "main"
       }
       "destination" = {
         "server"    = "https://kubernetes.default.svc"
@@ -65,7 +78,10 @@ resource "kubernetes_manifest" "app_of_apps" {
     }
   }
 
+  # This now depends on the time_sleep resource, ensuring the delay has passed.
   depends_on = [
-    helm_release.argocd
+    resource.time_sleep.wait_for_crd_registration
   ]
 }
+*/
+
