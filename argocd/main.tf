@@ -34,9 +34,32 @@ resource "helm_release" "argocd" {
   version    = "5.51.2"
 }
 
-# --- THIS IS THE NEW, GUARANTEED FIX ---
-# This resource introduces a 30-second delay after the Helm chart
-# installation starts, allowing the CRDs to be fully registered in the cluster.
+data "aws_secretsmanager_secret_version" "mywebsite-token" {
+  # This uses the secret name you pass into the module.
+  secret_id = var.config_repo_secret_name
+}
+
+resource "kubernetes_secret" "config_repo_ssh" {
+  depends_on = [helm_release.argocd]
+
+  metadata {
+    name      = var.config_repo_secret_name
+    namespace = "argocd"
+
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+
+  data = {
+    name          = var.config_repo_secret_name
+    type          = "git"
+    url           = var.config_repo_url
+    sshPrivateKey = data.aws_secretsmanager_secret_version.mywebsite-token.secret_string
+  }
+}
+
+
 resource "time_sleep" "wait_for_crd_registration" {
   create_duration = "30s"
 
@@ -46,7 +69,7 @@ resource "time_sleep" "wait_for_crd_registration" {
 }
 
 # This creates the main "App of Apps" in ArgoCD.
-/*
+
 resource "kubernetes_manifest" "app_of_apps" {
   manifest = {
     "apiVersion" = "argoproj.io/v1alpha1"
@@ -83,5 +106,5 @@ resource "kubernetes_manifest" "app_of_apps" {
     resource.time_sleep.wait_for_crd_registration
   ]
 }
-*/
+
 

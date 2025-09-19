@@ -33,6 +33,9 @@ module "argocd" {
   cluster_name           = module.eks.cluster_name
   cluster_endpoint       = module.eks.cluster_endpoint
   cluster_ca_certificate = module.eks.cluster_ca_certificate
+  config_repo_url         = "https://github.com/liormilliger/mywebsite-k8s.git"
+  config_repo_secret_name = "mywebsite-token" # The name you gave the secret in AWS
+
   
   providers = {
     kubernetes = kubernetes.eks
@@ -43,18 +46,18 @@ module "argocd" {
   depends_on = [module.eks]
 }
 
-module "aws_load_balancer_controller" {
-  source = "./lb-controller"
+# module "aws_load_balancer_controller" {
+#   source = "./lb-controller"
 
-  cluster_name      = module.eks.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  vpc_id            = module.vpc.vpc_id
+#   cluster_name      = module.eks.cluster_name
+#   oidc_provider_arn = module.eks.oidc_provider_arn
+#   vpc_id            = module.vpc.vpc_id
 
-  providers = {
-    helm = helm.eks
-  }
+#   providers = {
+#     helm = helm.eks
+#   }
 
-  depends_on = [module.eks]
-}
+#   depends_on = [module.eks]
+# }
 
 
