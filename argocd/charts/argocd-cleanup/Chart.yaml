@@ -1,0 +1,4 @@
+apiVersion: v2
+name: argocd-cleanup
+description: A Helm chart to run a pre-delete cleanup job for the Argo CD root application.
+version: 0.1.0

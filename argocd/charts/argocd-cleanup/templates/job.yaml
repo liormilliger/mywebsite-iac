@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-root-app-finalizer-removal
+  namespace: argocd
+  annotations:
+    # This is the magic: it tells Helm this is a hook to run before deletion.
+    "helm.sh/hook": pre-delete
+    # This ensures the hook is deleted after it succeeds.
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      # Use the ServiceAccount we created that has the correct permissions.
+      serviceAccountName: argocd-app-cleanup-sa
+      containers:
+      - name: kubectl
+        # A simple, official image that contains the kubectl binary.
+        image: bitnami/kubectl:latest
+        command:
+        - "sh"
+        - "-c"
+        # The command patches the application to remove its finalizer.
+        # This unlocks the deletion process.
+        - "kubectl patch application root-app -n argocd --type=json -p='[{\"op\": \"remove\", \"path\": \"/metadata/finalizers\"}]'"
+      restartPolicy: Never
+  backoffLimit: 1

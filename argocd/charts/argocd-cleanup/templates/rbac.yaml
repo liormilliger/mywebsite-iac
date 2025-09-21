@@ -1,0 +1,46 @@
+# This ServiceAccount is what our Job will run as.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-app-cleanup-sa
+  namespace: argocd
+  # Add the Helm hook annotation so these resources are also created during the delete hook.
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5" # Ensure RBAC is created before the Job.
+    "helm.sh/hook-delete-policy": hook-succeeded
+
+---
+# This Role grants the specific permission needed: to 'patch' the Application resource.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-app-cleanup-role
+  namespace: argocd
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+rules:
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["patch", "get"]
+
+---
+# This RoleBinding connects the Role to the ServiceAccount.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-app-cleanup-binding
+  namespace: argocd
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: argocd-app-cleanup-role
+subjects:
+- kind: ServiceAccount
+  name: argocd-app-cleanup-sa
