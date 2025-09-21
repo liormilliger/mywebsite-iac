@@ -25,20 +25,6 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 
-# NEW HELM RELEASE for the cleanup job.
-resource "helm_release" "argocd_cleanup_hook" {
-  name       = "argocd-cleanup-hook"
-  # Use the local chart you just created.
-  chart      = "${path.module}/charts/argocd-cleanup"
-  namespace  = kubernetes_namespace.argocd.metadata[0].name
-
-  # This is important! The main Argo CD application manifest
-  # must be deleted BEFORE this Helm release is deleted.
-  depends_on = [
-    kubernetes_manifest.app_of_apps
-  ]
-}
-
 # Installs the ArgoCD platform from the official Helm chart.
 resource "helm_release" "argocd" {
   name       = "argocd"
@@ -46,10 +32,6 @@ resource "helm_release" "argocd" {
   chart      = "argo-cd"
   namespace  = kubernetes_namespace.argocd.metadata[0].name
   version    = "5.51.2"
-  
-  depends_on = [
-  helm_release.argocd_cleanup_hook
-  ]
 }
 
 data "aws_secretsmanager_secret_version" "mywebsite-token" {
