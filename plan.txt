@@ -1,0 +1,650 @@
+module.eks.data.aws_secretsmanager_secret.ebs-credentials: Reading...
+module.eks.data.aws_secretsmanager_secret.aws-credentials: Reading...
+module.vpc.data.aws_availability_zones.available: Reading...
+module.eks.data.aws_secretsmanager_secret.aws-credentials: Read complete after 1s [id=arn:aws:secretsmanager:us-east-1:704505749045:secret:aws-credentials-OWbgXs]
+module.eks.data.aws_secretsmanager_secret.ebs-credentials: Read complete after 1s [id=arn:aws:secretsmanager:us-east-1:704505749045:secret:aws-credentials-OWbgXs]
+module.eks.data.aws_secretsmanager_secret_version.ebs-csi-secret: Reading...
+module.vpc.data.aws_availability_zones.available: Read complete after 1s [id=us-east-1]
+module.eks.data.aws_secretsmanager_secret_version.ebs-csi-secret: Read complete after 0s [id=arn:aws:secretsmanager:us-east-1:704505749045:secret:aws-credentials-OWbgXs|AWSCURRENT]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+ <= read (data resources)
+
+Terraform planned the following actions, but then encountered a problem:
+
+  # null_resource.update_kubeconfig will be created
+  + resource "null_resource" "update_kubeconfig" {
+      + id = (known after apply)
+    }
+
+  # module.argocd.data.aws_secretsmanager_secret_version.mywebsite-token will be read during apply
+  # (depends on a resource or a module with changes pending)
+ <= data "aws_secretsmanager_secret_version" "mywebsite-token" {
+      + arn            = (known after apply)
+      + created_date   = (known after apply)
+      + id             = (known after apply)
+      + secret_binary  = (sensitive value)
+      + secret_id      = "mywebsite-token"
+      + secret_string  = (sensitive value)
+      + version_id     = (known after apply)
+      + version_stages = (known after apply)
+    }
+
+  # module.argocd.helm_release.argocd will be created
+  + resource "helm_release" "argocd" {
+      + atomic                     = false
+      + chart                      = "argo-cd"
+      + cleanup_on_fail            = false
+      + create_namespace           = false
+      + dependency_update          = false
+      + disable_crd_hooks          = false
+      + disable_openapi_validation = false
+      + disable_webhooks           = false
+      + force_update               = false
+      + id                         = (known after apply)
+      + lint                       = false
+      + max_history                = 0
+      + metadata                   = (known after apply)
+      + name                       = "argocd"
+      + namespace                  = "argocd"
+      + pass_credentials           = false
+      + recreate_pods              = false
+      + render_subchart_notes      = true
+      + replace                    = false
+      + repository                 = "https://argoproj.github.io/argo-helm"
+      + reset_values               = false
+      + reuse_values               = false
+      + skip_crds                  = false
+      + status                     = "deployed"
+      + timeout                    = 300
+      + verify                     = false
+      + version                    = "5.51.2"
+      + wait                       = true
+      + wait_for_jobs              = false
+    }
+
+  # module.argocd.kubernetes_namespace.argocd will be created
+  + resource "kubernetes_namespace" "argocd" {
+      + id                               = (known after apply)
+      + wait_for_default_service_account = false
+
+      + metadata {
+          + generation       = (known after apply)
+          + name             = "argocd"
+          + resource_version = (known after apply)
+          + uid              = (known after apply)
+        }
+    }
+
+  # module.argocd.kubernetes_secret.config_repo_ssh will be created
+  + resource "kubernetes_secret" "config_repo_ssh" {
+      + data                           = (sensitive value)
+      + id                             = (known after apply)
+      + type                           = "Opaque"
+      + wait_for_service_account_token = true
+
+      + metadata {
+          + generation       = (known after apply)
+          + labels           = {
+              + "argocd.argoproj.io/secret-type" = "repository"
+            }
+          + name             = "mywebsite-token"
+          + namespace        = "argocd"
+          + resource_version = (known after apply)
+          + uid              = (known after apply)
+        }
+    }
+
+  # module.argocd.time_sleep.wait_for_crd_registration will be created
+  + resource "time_sleep" "wait_for_crd_registration" {
+      + create_duration = "30s"
+      + id              = (known after apply)
+    }
+
+  # module.eks.data.aws_vpc.cluster_vpc will be read during apply
+  # (config refers to values not yet known)
+ <= data "aws_vpc" "cluster_vpc" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = (known after apply)
+      + cidr_block_associations              = (known after apply)
+      + default                              = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = (known after apply)
+      + enable_dns_support                   = (known after apply)
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = (known after apply)
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + state                                = (known after apply)
+      + tags                                 = (known after apply)
+    }
+
+  # module.eks.data.tls_certificate.eks_cluster_cert will be read during apply
+  # (config refers to values not yet known)
+ <= data "tls_certificate" "eks_cluster_cert" {
+      + certificates = (known after apply)
+      + id           = (known after apply)
+      + url          = (known after apply)
+    }
+
+  # module.eks.aws_eks_cluster.eks-cluster will be created
+  + resource "aws_eks_cluster" "eks-cluster" {
+      + arn                           = (known after apply)
+      + bootstrap_self_managed_addons = true
+      + certificate_authority         = (known after apply)
+      + cluster_id                    = (known after apply)
+      + created_at                    = (known after apply)
+      + endpoint                      = (known after apply)
+      + id                            = (known after apply)
+      + identity                      = (known after apply)
+      + name                          = "liorm-webapp-cluster"
+      + platform_version              = (known after apply)
+      + role_arn                      = (known after apply)
+      + status                        = (known after apply)
+      + tags                          = {
+          + "provisioned_by" = "Terraform"
+        }
+      + tags_all                      = {
+          + "provisioned_by" = "Terraform"
+        }
+      + version                       = "1.33"
+
+      + vpc_config {
+          + cluster_security_group_id = (known after apply)
+          + endpoint_private_access   = false
+          + endpoint_public_access    = true
+          + public_access_cidrs       = (known after apply)
+          + subnet_ids                = (known after apply)
+          + vpc_id                    = (known after apply)
+        }
+    }
+
+  # module.eks.aws_eks_node_group.node-group will be created
+  + resource "aws_eks_node_group" "node-group" {
+      + ami_type               = (known after apply)
+      + arn                    = (known after apply)
+      + capacity_type          = "ON_DEMAND"
+      + cluster_name           = "liorm-webapp-cluster"
+      + disk_size              = (known after apply)
+      + id                     = (known after apply)
+      + instance_types         = [
+          + "t3.medium",
+          + "t3a.medium",
+        ]
+      + labels                 = {
+          + "nodeName" = "liorm-webapp"
+          + "role"     = "general"
+        }
+      + node_group_name        = "liorm-node-group"
+      + node_group_name_prefix = (known after apply)
+      + node_role_arn          = (known after apply)
+      + release_version        = (known after apply)
+      + resources              = (known after apply)
+      + status                 = (known after apply)
+      + subnet_ids             = (known after apply)
+      + tags                   = {
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "provisioned_by"                             = "Terraform"
+        }
+      + tags_all               = {
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "provisioned_by"                             = "Terraform"
+        }
+      + version                = "1.33"
+
+      + launch_template {
+          + id      = (known after apply)
+          + name    = "liorm-webapp"
+          + version = (known after apply)
+        }
+
+      + scaling_config {
+          + desired_size = 2
+          + max_size     = 3
+          + min_size     = 0
+        }
+
+      + update_config {
+          + max_unavailable = 1
+        }
+    }
+
+  # module.eks.aws_iam_openid_connect_provider.eks_oidc_provider will be created
+  + resource "aws_iam_openid_connect_provider" "eks_oidc_provider" {
+      + arn             = (known after apply)
+      + client_id_list  = [
+          + "sts.amazonaws.com",
+        ]
+      + id              = (known after apply)
+      + tags            = (known after apply)
+      + tags_all        = (known after apply)
+      + thumbprint_list = (known after apply)
+      + url             = (known after apply)
+    }
+
+  # module.eks.aws_iam_role.eks-cluster-iam-role will be created
+  + resource "aws_iam_role" "eks-cluster-iam-role" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "eks.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "liorm-webapp-cluster-iam-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags                  = {
+          + "provisioned_by" = "Terraform"
+        }
+      + tags_all              = {
+          + "provisioned_by" = "Terraform"
+        }
+      + unique_id             = (known after apply)
+    }
+
+  # module.eks.aws_iam_role.liorm-node-group-role will be created
+  + resource "aws_iam_role" "liorm-node-group-role" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "liorm_node-group-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.eks-cluster-policy will be created
+  + resource "aws_iam_role_policy_attachment" "eks-cluster-policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+      + role       = "liorm-webapp-cluster-iam-role"
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.liorm-ec2-container-registry-read-only will be created
+  + resource "aws_iam_role_policy_attachment" "liorm-ec2-container-registry-read-only" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      + role       = "liorm_node-group-role"
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.liorm-eks-cni-policy will be created
+  + resource "aws_iam_role_policy_attachment" "liorm-eks-cni-policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+      + role       = "liorm_node-group-role"
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.liorm-eks-csi-ebs-node-policy will be created
+  + resource "aws_iam_role_policy_attachment" "liorm-eks-csi-ebs-node-policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      + role       = "liorm_node-group-role"
+    }
+
+  # module.eks.aws_iam_role_policy_attachment.liorm-eks-worker-node-policy will be created
+  + resource "aws_iam_role_policy_attachment" "liorm-eks-worker-node-policy" {
+      + id         = (known after apply)
+      + policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+      + role       = "liorm_node-group-role"
+    }
+
+  # module.eks.aws_launch_template.naming-nodes will be created
+  + resource "aws_launch_template" "naming-nodes" {
+      + arn                    = (known after apply)
+      + default_version        = (known after apply)
+      + id                     = (known after apply)
+      + latest_version         = (known after apply)
+      + name                   = "liorm-webapp"
+      + name_prefix            = (known after apply)
+      + tags_all               = (known after apply)
+      + vpc_security_group_ids = (known after apply)
+
+      + metadata_options {
+          + http_endpoint               = "enabled"
+          + http_protocol_ipv6          = (known after apply)
+          + http_put_response_hop_limit = 2
+          + http_tokens                 = "optional"
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + tag_specifications {
+          + resource_type = "instance"
+          + tags          = {
+              + "Name" = "liorm-webapp"
+            }
+        }
+    }
+
+  # module.eks.aws_security_group.eks_node_sg will be created
+  + resource "aws_security_group" "eks_node_sg" {
+      + arn                    = (known after apply)
+      + description            = "Security group for EKS cluster worker nodes"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = (known after apply)
+              + description      = ""
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 443
+            },
+          + {
+              + cidr_blocks      = (known after apply)
+              + description      = ""
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 0
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = true
+              + to_port          = 0
+            },
+        ]
+      + name                   = "liorm-webapp-cluster-node-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "liorm-webapp-cluster-node-sg"
+        }
+      + tags_all               = {
+          + "Name" = "liorm-webapp-cluster-node-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.vpc.aws_internet_gateway.liorm_igw will be created
+  + resource "aws_internet_gateway" "liorm_igw" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Name" = "liorm-igw"
+        }
+      + tags_all = {
+          + "Name" = "liorm-igw"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # module.vpc.aws_route_table.liorm_route_table will be created
+  + resource "aws_route_table" "liorm_route_table" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + carrier_gateway_id         = ""
+              + cidr_block                 = "0.0.0.0/0"
+              + core_network_arn           = ""
+              + destination_prefix_list_id = ""
+              + egress_only_gateway_id     = ""
+              + gateway_id                 = (known after apply)
+              + ipv6_cidr_block            = ""
+              + local_gateway_id           = ""
+              + nat_gateway_id             = ""
+              + network_interface_id       = ""
+              + transit_gateway_id         = ""
+              + vpc_endpoint_id            = ""
+              + vpc_peering_connection_id  = ""
+            },
+        ]
+      + tags             = {
+          + "Name" = "liorm-route-table"
+        }
+      + tags_all         = {
+          + "Name" = "liorm-route-table"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.vpc.aws_route_table_association.liorm_private_subnet_association[0] will be created
+  + resource "aws_route_table_association" "liorm_private_subnet_association" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.aws_route_table_association.liorm_private_subnet_association[1] will be created
+  + resource "aws_route_table_association" "liorm_private_subnet_association" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.aws_route_table_association.liorm_public_subnet_association[0] will be created
+  + resource "aws_route_table_association" "liorm_public_subnet_association" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.aws_route_table_association.liorm_public_subnet_association[1] will be created
+  + resource "aws_route_table_association" "liorm_public_subnet_association" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.vpc.aws_subnet.private_subnets[0] will be created
+  + resource "aws_subnet" "private_subnets" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.3.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name"                                       = "liorm-private-subnet-0"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.ioio/role/internal-elb"          = "1"
+        }
+      + tags_all                                       = {
+          + "Name"                                       = "liorm-private-subnet-0"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.ioio/role/internal-elb"          = "1"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.aws_subnet.private_subnets[1] will be created
+  + resource "aws_subnet" "private_subnets" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.4.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name"                                       = "liorm-private-subnet-1"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.ioio/role/internal-elb"          = "1"
+        }
+      + tags_all                                       = {
+          + "Name"                                       = "liorm-private-subnet-1"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.ioio/role/internal-elb"          = "1"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.aws_subnet.public_subnets[0] will be created
+  + resource "aws_subnet" "public_subnets" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name"                                       = "liorm-public-subnet-0"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.io/role/elb"                     = "1"
+        }
+      + tags_all                                       = {
+          + "Name"                                       = "liorm-public-subnet-0"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.io/role/elb"                     = "1"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.aws_subnet.public_subnets[1] will be created
+  + resource "aws_subnet" "public_subnets" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-east-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.2.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name"                                       = "liorm-public-subnet-1"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.io/role/elb"                     = "1"
+        }
+      + tags_all                                       = {
+          + "Name"                                       = "liorm-public-subnet-1"
+          + "kubernetes.io/cluster/liorm-webapp-cluster" = "shared"
+          + "kubernetes.io/role/elb"                     = "1"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.vpc.aws_vpc.liorm_vpc will be created
+  + resource "aws_vpc" "liorm_vpc" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = (known after apply)
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Name" = "liorm-webapp"
+        }
+      + tags_all                             = {
+          + "Name" = "liorm-webapp"
+        }
+    }
+
+Plan: 28 to add, 0 to change, 0 to destroy.

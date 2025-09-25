@@ -1,5 +1,3 @@
-# Corrected argocd/main.tf
-
 terraform {
   required_providers {
     helm = {
@@ -10,7 +8,6 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.20"
     }
-    # We now require the time provider
     time = {
       source  = "hashicorp/time"
       version = ">= 0.9.1"
@@ -34,16 +31,23 @@ resource "helm_release" "argocd" {
   version    = "5.51.2"
 }
 
-data "aws_secretsmanager_secret_version" "mywebsite-token" {
-  # This uses the secret name you pass into the module.
-  secret_id = var.config_repo_secret_name
+# Wait for CRDs to be registered
+resource "time_sleep" "wait_for_crd_registration" {
+  create_duration = "30s"
+  depends_on      = [helm_release.argocd]
 }
 
+# Get Git secret from AWS Secrets Manager
+data "aws_secretsmanager_secret_version" "config-repo-private-sshkey" {
+  secret_id = var.config-repo-secret-name
+}
+
+# Create Kubernetes Secret for ArgoCD repo access
 resource "kubernetes_secret" "config_repo_ssh" {
   depends_on = [helm_release.argocd]
 
   metadata {
-    name      = var.config_repo_secret_name
+    name      = var.config-repo-secret-name
     namespace = "argocd"
 
     labels = {
@@ -52,59 +56,46 @@ resource "kubernetes_secret" "config_repo_ssh" {
   }
 
   data = {
-    name          = var.config_repo_secret_name
+    name          = var.config-repo-secret-name
     type          = "git"
     url           = var.config_repo_url
-    sshPrivateKey = data.aws_secretsmanager_secret_version.mywebsite-token.secret_string
+    sshPrivateKey = data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string
   }
 }
 
-
-resource "time_sleep" "wait_for_crd_registration" {
-  create_duration = "30s"
-
-  depends_on = [
-    helm_release.argocd
-  ]
-}
-
 # This creates the main "App of Apps" in ArgoCD.
-
 resource "kubernetes_manifest" "app_of_apps" {
   manifest = {
-    "apiVersion" = "argoproj.io/v1alpha1"
-    "kind"       = "Application"
-    "metadata" = {
-      "name"      = "root-app"
-      "namespace" = "argocd"
-      "finalizers" = [
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      name      = "root-app"
+      namespace = "argocd"
+      finalizers = [
         "resources-finalizer.argocd.argoproj.io"
       ]
     }
-    "spec" = {
-      "project" = "default"
-      "source" = {
-        "repoURL"        = "https://github.com/liormilliger/mywebsite-k8s.git"
-        "path"           = "argocd-apps"
-        "targetRevision" = "main"
+    spec = {
+      project = "default"
+      source = {
+        repoURL        = "git@github.com:liormilliger/mywebsite-k8s.git"
+        path           = "argocd-apps"
+        targetRevision = "main"
       }
-      "destination" = {
-        "server"    = "https://kubernetes.default.svc"
-        "namespace" = "argocd"
+      destination = {
+        server    = "https://kubernetes.default.svc"
+        namespace = "argocd"
       }
-      "syncPolicy" = {
-        "automated" = {
-          "prune"    = true
-          "selfHeal" = true
+      syncPolicy = {
+        automated = {
+          prune    = true
+          selfHeal = true
         }
       }
     }
   }
 
-  # This now depends on the time_sleep resource, ensuring the delay has passed.
   depends_on = [
-    resource.time_sleep.wait_for_crd_registration
+    time_sleep.wait_for_crd_registration
   ]
 }
-
-

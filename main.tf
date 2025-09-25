@@ -30,11 +30,11 @@ module "eks" {
 
 module "argocd" {
   source                 = "./argocd"
-  cluster_name           = module.eks.cluster_name
-  cluster_endpoint       = module.eks.cluster_endpoint
-  cluster_ca_certificate = module.eks.cluster_ca_certificate
-  config_repo_url         = "https://github.com/liormilliger/mywebsite-k8s.git"
-  config_repo_secret_name = "mywebsite-token" # The name you gave the secret in AWS
+  # cluster_name           = module.eks.cluster_name
+  # cluster_endpoint       = module.eks.cluster_endpoint
+  # cluster_ca_certificate = module.eks.cluster_ca_certificate
+  config_repo_url         = "git@github.com:liormilliger/mywebsite-k8s.git"
+  config-repo-secret-name = "config-repo-private-sshkey" # The name you gave the secret in AWS
 
   
   providers = {
