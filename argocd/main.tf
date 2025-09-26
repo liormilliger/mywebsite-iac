@@ -56,7 +56,7 @@ resource "kubernetes_secret" "config_repo_ssh" {
   }
 
   data = {
-    name          = var.config-repo-secret-name
+    # name          = var.config-repo-secret-name
     type          = "git"
     url           = var.config_repo_url
     sshPrivateKey = data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string
@@ -69,7 +69,7 @@ resource "kubernetes_manifest" "app_of_apps" {
     apiVersion = "argoproj.io/v1alpha1"
     kind       = "Application"
     metadata = {
-      name      = "root-app"
+      name      = "app-of-apps"
       namespace = "argocd"
       finalizers = [
         "resources-finalizer.argocd.argoproj.io"
