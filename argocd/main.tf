@@ -56,10 +56,10 @@ resource "kubernetes_secret" "config_repo_ssh" {
   }
 
   data = {
-    # name          = var.config-repo-secret-name
     type          = "git"
     url           = var.config_repo_url
-    sshPrivateKey = data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string
+    # Decode the JSON from Secrets Manager and extract the key value
+    sshPrivateKey = jsondecode(data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string)["config-repo-private-sshkey"] # <-- CHANGE THIS LINE
   }
 }
 
