@@ -25,5 +25,3 @@ max_size = 3
 desired_size = 2
 node_name = "liorm-webapp"
 
-
-

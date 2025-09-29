@@ -22,14 +22,39 @@ resource "kubernetes_namespace" "argocd" {
   }
 }
 
+# Get Git secret from AWS Secrets Manager
+data "aws_secretsmanager_secret_version" "config-repo-private-sshkey" {
+  secret_id = var.config-repo-secret-name
+}
+
 # Installs the ArgoCD platform from the official Helm chart.
+# <<< CHANGE START: We now pass the repository config directly into the Helm release.
 resource "helm_release" "argocd" {
   name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   namespace  = kubernetes_namespace.argocd.metadata[0].name
   version    = "5.51.2"
+
+  values = [
+    yamlencode({
+      # This block configures repositories directly in ArgoCD's configmap and secrets.
+      # The Helm chart will create the correctly labeled secret for you.
+      configs = {
+        repositories = {
+          # You can give this a descriptive name.
+          my-config-repo = {
+            name           = "my-config-repo"
+            type           = "git"
+            url            = var.config_repo_url
+            sshPrivateKey  = jsondecode(data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string)["config-repo-private-sshkey"]
+          }
+        }
+      }
+    })
+  ]
 }
+# <<< CHANGE END
 
 # Wait for CRDs to be registered
 resource "time_sleep" "wait_for_crd_registration" {
@@ -37,31 +62,8 @@ resource "time_sleep" "wait_for_crd_registration" {
   depends_on      = [helm_release.argocd]
 }
 
-# Get Git secret from AWS Secrets Manager
-data "aws_secretsmanager_secret_version" "config-repo-private-sshkey" {
-  secret_id = var.config-repo-secret-name
-}
-
-# Create Kubernetes Secret for ArgoCD repo access
-resource "kubernetes_secret" "config_repo_ssh" {
-  depends_on = [helm_release.argocd]
-
-  metadata {
-    name      = var.config-repo-secret-name
-    namespace = "argocd"
-
-    labels = {
-      "argocd.argoproj.io/secret-type" = "repository"
-    }
-  }
-
-  data = {
-    type          = "git"
-    url           = var.config_repo_url
-    # Decode the JSON from Secrets Manager and extract the key value
-    sshPrivateKey = jsondecode(data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string)["config-repo-private-sshkey"] # <-- CHANGE THIS LINE
-  }
-}
+# <<< REMOVED: The entire kubernetes_secret resource is no longer needed.
+# The Helm chart now manages the creation of this secret internally.
 
 # This creates the main "App of Apps" in ArgoCD.
 resource "kubernetes_manifest" "app_of_apps" {
@@ -78,7 +80,8 @@ resource "kubernetes_manifest" "app_of_apps" {
     spec = {
       project = "default"
       source = {
-        repoURL        = "git@github.com:liormilliger/mywebsite-k8s.git"
+        # Note: The repoURL must exactly match the URL provided in the helm values
+        repoURL        = var.config_repo_url 
         path           = "argocd-apps"
         targetRevision = "main"
       }
@@ -95,6 +98,7 @@ resource "kubernetes_manifest" "app_of_apps" {
     }
   }
 
+  # <<< CHANGE: Updated dependency. We no longer depend on the external secret.
   depends_on = [
     time_sleep.wait_for_crd_registration
   ]

@@ -46,18 +46,5 @@ module "argocd" {
   depends_on = [module.eks]
 }
 
-# module "aws_load_balancer_controller" {
-#   source = "./lb-controller"
-
-#   cluster_name      = module.eks.cluster_name
-#   oidc_provider_arn = module.eks.oidc_provider_arn
-#   vpc_id            = module.vpc.vpc_id
-
-#   providers = {
-#     helm = helm.eks
-#   }
-
-#   depends_on = [module.eks]
-# }
 
 
