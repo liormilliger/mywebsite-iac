@@ -58,3 +58,26 @@ resource "aws_eks_addon" "ebs_csi_driver" {
     "eks_addon" = "ebs-csi-driver"
   }
 }
+
+################################################################################
+# Installing Kubernetes Networking Components
+################################################################################
+
+resource "aws_eks_addon" "kube-proxy" {
+  cluster_name = aws_eks_cluster.eks-cluster.name
+  addon_name   = "kube-proxy"
+
+  depends_on = [aws_eks_node_group.node-group]
+}
+resource "aws_eks_addon" "coredns" {
+  cluster_name = aws_eks_cluster.eks-cluster.name
+  addon_name   = "coredns"
+
+  depends_on = [aws_eks_node_group.node-group]
+}
+resource "aws_eks_addon" "vpc-cni" {
+  cluster_name = aws_eks_cluster.eks-cluster.name
+  addon_name   = "vpc-cni"
+
+  depends_on = [aws_eks_node_group.node-group]
+}
