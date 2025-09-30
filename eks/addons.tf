@@ -46,8 +46,10 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver_policy_attachment" {
 
 resource "aws_eks_addon" "ebs_csi_driver" {
   # Ensure the IAM role and policy are created before the add-on.
-  depends_on = [aws_iam_role_policy_attachment.ebs_csi_driver_policy_attachment]
-
+  depends_on = [
+    aws_iam_role_policy_attachment.ebs_csi_driver_policy_attachment,
+    aws_eks_node_group.node-group
+  ]
   cluster_name = aws_eks_cluster.eks-cluster.name
   addon_name   = "aws-ebs-csi-driver"
 
