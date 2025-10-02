@@ -48,3 +48,37 @@ This module automates the installation and configuration of ArgoCD on the EKS cl
 * Configures ArgoCD using the "app-of-apps" pattern to manage all subsequent application deployments.
 
 * Sets up the connection to the `mywebsite-k8s` repository by using an SSH key securely stored as a secret in AWS Secrets Manager.
+
+## Required Variables (`terraform.tfvars`)
+
+Please note that a `terraform.tfvars` file is excluded from this repository for security reasons, but it is essential for the deployment of the infrastructure. You will need to create this file in the root of the repository.
+
+Below is the structure of the variables that should be included in your `terraform.tfvars` file. Replace the placeholder values with your specific configuration.
+
+```hcl
+### GENERAL ###
+REGION = "<your-aws-region>"
+ACCOUNT = "<your-aws-account-id>"
+
+### VPC ###
+vpc_name = "<your-vpc-name>"
+# availability_zone = ""
+# az_name = ""
+vpc_cidr_block = "<your-vpc-cidr>"
+private_subnet_cidrs = ["<private-subnet-1-cidr>", "<private-subnet-2-cidr>"]
+public_subnet_cidrs = ["<public-subnet-1-cidr>", "<public-subnet-2-cidr>"]
+
+### CLUSTER ###
+EbsCredSecret = "<your-ebs-secret-name>"
+CredSecret = "<your-credentials-secret-name>"
+cluster_name = "<your-eks-cluster-name>"
+cluster_version = "<eks-cluster-version>"
+
+### NODE GROUP ###
+node_group_name = "<your-node-group-name>"
+capacity_type = "ON_DEMAND"
+# instance_types = ["t3.medium", "t3a.medium"]
+instance_types = ["<instance-type-1>", "<instance-type-2>"]
+max_size = <max-node-count>
+desired_size = <desired-node-count>
+node_name = "<your-node-name>"
