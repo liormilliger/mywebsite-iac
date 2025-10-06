@@ -23,7 +23,7 @@ capacity_type = "ON_DEMAND"
 instance_types = ["t3.large", "c5.large"] //~0.09 per hour
 # instance_types = ["t3.xlarge"] //~0.17 per hour
 # instance_types = ["t3.2xlarge", "c5.2xlarge"] //~0.34 per hour
-max_size = 3
+max_size = 4
 desired_size = 2
 node_name = "liorm-webapp"
 

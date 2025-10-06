@@ -47,7 +47,7 @@ resource "helm_release" "argocd" {
             name           = "my-config-repo"
             type           = "git"
             url            = var.config_repo_url
-            sshPrivateKey  = jsondecode(data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string)["config-repo-private-sshkey"]
+            sshPrivateKey = replace(jsondecode(data.aws_secretsmanager_secret_version.config-repo-private-sshkey.secret_string)["config-repo-private-sshkey"], "\\n", "\n")
           }
         }
       }
