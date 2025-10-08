@@ -22,7 +22,6 @@ module "eks" {
     cluster_version = var.cluster_version
     CredSecret = var.CredSecret
     desired_size = var.desired_size
-        # Pass subnet IDs from the vpc-network module's outputs
     private_subnet_ids = module.vpc.private_subnet_ids
     public_subnet_ids = module.vpc.public_subnet_ids
 
@@ -30,17 +29,13 @@ module "eks" {
 
 module "argocd" {
   source                 = "./argocd"
-  # cluster_name           = module.eks.cluster_name
-  # cluster_endpoint       = module.eks.cluster_endpoint
-  # cluster_ca_certificate = module.eks.cluster_ca_certificate
   config_repo_url         = "git@github.com:liormilliger/mywebsite-k8s.git"
-  config-repo-secret-name = "config-repo-private-sshkey" # The name you gave the secret in AWS
+  config-repo-secret-name = "config-repo-private-sshkey"
 
   
   providers = {
     kubernetes = kubernetes.eks
     helm       = helm.eks
-    # REMOVED kubectl = kubectl
   }
   
   depends_on = [module.eks]

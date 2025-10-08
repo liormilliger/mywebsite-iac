@@ -28,11 +28,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1" # It's better to explicitly set the region
+  region = "us-east-1"
 }
-
-# This helper resource is no longer needed with the exec configuration.
-# data "aws_eks_cluster_auth" "cluster" {}
 
 provider "helm" {
   alias = "eks"

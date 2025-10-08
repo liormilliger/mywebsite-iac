@@ -13,21 +13,6 @@ variable "vpc_name" {
   type        = string
 }
 
-# variable "vpc_id" {
-#   description = "VPC id"
-#   type = string
-# }
-
-# variable "availability_zone" {
-#   description = "Availability zone list"
-#   type        = list(string)
-# }
-
-# variable "az_name" {
-#   description = "Availability zone name list"
-#   type        = list(string)
-# }
-
 variable "vpc_cidr_block" {
   description = "CIDR block for the VPC"
   type        = string
