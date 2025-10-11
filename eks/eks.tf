@@ -26,6 +26,11 @@ resource "aws_iam_role_policy_attachment" "eks-cluster-policy" {
   role       = aws_iam_role.eks-cluster-iam-role.name
 }
 
+resource "aws_iam_role_policy_attachment" "eks-cluster-liormALB-policy-attachment" {
+  policy_arn = "arn:aws:iam::704505749045:policy/liormALB"
+  role       = aws_iam_role.eks-cluster-iam-role.name
+}
+
 resource "aws_eks_cluster" "eks-cluster" {
   name     = var.cluster_name
   version  = var.cluster_version
@@ -48,7 +53,10 @@ resource "aws_eks_cluster" "eks-cluster" {
     ]
   }
 
-  depends_on = [aws_iam_role_policy_attachment.eks-cluster-policy]
+  depends_on = [
+    aws_iam_role_policy_attachment.eks-cluster-policy,
+    aws_iam_role_policy_attachment.eks-cluster-liormALB-policy-attachment
+  ]
 }
 
 resource "aws_iam_openid_connect_provider" "eks_oidc_provider" {

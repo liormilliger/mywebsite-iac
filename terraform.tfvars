@@ -19,8 +19,8 @@ cluster_version = "1.33"
 ### NODE GROUP ###
 node_group_name = "liorm-node-group"
 capacity_type = "ON_DEMAND"
-# instance_types = ["t3.medium", "t3a.medium"] //~0.04 per hour
-instance_types = ["t3.large", "c5.large"] //~0.09 per hour
+instance_types = ["t3.medium", "t3a.medium"] //~0.04 per hour
+# instance_types = ["t3.large", "c5.large"] //~0.09 per hour
 # instance_types = ["t3.xlarge"] //~0.17 per hour
 # instance_types = ["t3.2xlarge", "c5.2xlarge"] //~0.34 per hour
 max_size = 4
